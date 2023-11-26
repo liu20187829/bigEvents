@@ -25,11 +25,53 @@
                 <i class="iconfont icon-key"></i>
                 <input type="text" class="input_txt" placeholder="邮箱/手机号">
                 <input type="password" class="input_pass" placeholder="密码">
-                <input type="submit" class="input_sub" value="登 录">
+                <input type="submit" class="input_sub" id="btn_login" value="登 录">
             </form>
         </div>
 
-    </div> 
+    </div>
+
+    <script src="./js/jquery-1.12.4.min.js"></script>
+    <script>
+        /* 登录功能思路分析:
+           1. 给登录按钮设置一个点击事件.
+           2. 获取用户名和密码.对用户名和密码进行空格处理.
+           3. 判空. 如果用户名或者密码为空,则弹出提示框. "用户名或者密码错误"
+           4. 如果不为空, 发送ajax请求进行登录.
+           5. 如果登录成功,跳转到首页. 如果登录不成功,弹出提示框. "用户名或者密码错误"
+        */
+        $(function() {
+            // 1. 给登录按钮设置一个点击事件.
+        $('#btn_login').on('click', function(e){
+            // 阻止默认跳转
+            e.preventDefault();
+            // 2. 获取用户名和密码.对用户名和密码进行去掉空格处理.
+            let user_name = $('.input_txt').val().trim();
+            let password = $('.input_pass').val().trim();
+            // 3. 判空. 如果用户名或者密码为空,则弹出提示框. "用户名或者密码错误"
+            if(user_name == '' || password == '') {
+                alert('用户名或者密码错误');
+                return;  // 不再往下执行
+            };
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8000/admin/login',
+                data: {
+                    user_name,
+                    password,
+                },
+                success: function(backData) {
+                    if(backData.code == 200) {
+                        // 如果正确,跳转到首页
+                        window.location.href = './index.html';
+                    }else {
+                        alert('用户名或者密码错误');
+                    }
+                }
+            })
+        })
+        });
+    </script>
 
 </body>
 
