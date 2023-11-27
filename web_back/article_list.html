@@ -30,9 +30,9 @@
                             <option>爱旅行</option>
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
-                            <option>所有状态</option>
-                            <option value="drafted">草稿</option>
-                            <option value="published">已发布</option>
+                            <option value="">所有状态</option>
+                            <option>草稿</option>
+                            <option>已发布</option>
                         </select>
                         <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
                     </form>
@@ -279,6 +279,22 @@
         {{/each}}
     </script>
 
+    <script id="tmp_list" type="text/html">
+        {{each data}}
+        <tr>
+            <td>{{$value.title}}</td>
+            <td>{{$value.author}}</td>
+            <td>{{$value.type}}</td>
+            <td class="text-center">{{$value.date}}</td>
+            <td class="text-center">{{$value.state}}</td>
+            <td class="text-center">
+                <a href="post-edit.html?id=995" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:deleteTr({{$value.id}});" class="btn btn-danger btn-xs">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+
     <script>
         // 设置左侧菜单
         $('#release_btn').click(function () {
@@ -296,8 +312,33 @@
                         $('#selCategory').html(resHtml);
                     }
                 }
-            })
-        })
+            });
+
+            // 点击筛选按钮搜索文章
+            $('#btnSearch').on('click', function (e) {
+                e.preventDefault();  //阻止默认跳转
+                // 获取文章类别的id和状态
+                var cateId = $('#selCategory').val();
+                var state = $('#selStatus').val();
+                console.log(cateId, state);
+                // 发送ajax请求
+                $.ajax({
+                    url: 'http://localhost:8000/admin/search',
+                    data: {
+                        type: cateId,
+                        state,
+                        page: 1,
+                        perpage: 5,
+                    },
+                    success: function (backData) {
+                        if (backData.code == 200) {
+                            var resHtml = template('tmp_list', backData);
+                            $('tbody').html(resHtml);
+                        }
+                    }
+                })
+            });
+        });
     </script>
 
 </body>
